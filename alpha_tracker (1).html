@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ЦСО «А» — Трекер підготовки</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0b0d;
+  --surface: #111318;
+  --surface2: #181c23;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --accent: #00d4aa;
+  --accent2: #005f4b;
+  --red: #e24b4b;
+  --amber: #e8a020;
+  --text: #e8eaed;
+  --muted: #6b7280;
+  --mono: 'JetBrains Mono', monospace;
+  --display: 'Rajdhani', sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--display);min-height:100vh;overflow-x:hidden}
+
+/* bg grid */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:linear-gradient(rgba(0,212,170,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,170,0.03) 1px,transparent 1px);
+  background-size:40px 40px;pointer-events:none;z-index:0
+}
+
+.shell{position:relative;z-index:1;max-width:960px;margin:0 auto;padding:24px 20px 60px}
+
+/* header */
+.hdr{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:32px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.hdr-left h1{font-size:28px;font-weight:700;letter-spacing:2px;color:var(--accent);text-transform:uppercase}
+.hdr-left p{font-size:12px;color:var(--muted);letter-spacing:1px;margin-top:2px;font-family:var(--mono)}
+.hdr-right{text-align:right}
+.hdr-right .date{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.hdr-right .overall{font-size:32px;font-weight:700;color:var(--accent);line-height:1}
+.hdr-right .overall-label{font-size:10px;color:var(--muted);letter-spacing:1px}
+
+/* tabs */
+.tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:1px solid var(--border)}
+.tab{padding:10px 18px;font-family:var(--display);font-size:13px;font-weight:600;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:none;background:transparent;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.section{display:none}.section.active{display:block}
+
+/* stat cards */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:24px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;position:relative;overflow:hidden}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);opacity:.4}
+.stat.danger::before{background:var(--red)}
+.stat.warn::before{background:var(--amber)}
+.stat.ok::before{background:var(--accent)}
+.stat-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;font-family:var(--mono)}
+.stat-val{font-size:26px;font-weight:700;line-height:1;color:var(--text)}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:4px;font-family:var(--mono)}
+
+/* week grid */
+.week-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:24px}
+.week-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px;cursor:pointer;transition:all .2s;position:relative}
+.week-card:hover{border-color:var(--border2);background:var(--surface2)}
+.week-card.active-week{border-color:var(--accent);box-shadow:0 0 12px rgba(0,212,170,0.15)}
+.week-card.full{border-color:var(--accent2)}
+.wk-num{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:var(--mono);margin-bottom:4px}
+.wk-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:8px;line-height:1.3}
+.wk-days{font-size:11px;color:var(--muted);font-family:var(--mono);margin-bottom:6px}
+.wk-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+.wk-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s}
+
+/* day row */
+.day-section-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-family:var(--mono);margin-bottom:12px}
+.week-nav{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.nav-btn{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:6px 14px;font-family:var(--display);font-size:13px;font-weight:600;letter-spacing:1px;cursor:pointer;border-radius:6px;transition:all .2s}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+.nav-title{flex:1;text-align:center;font-size:16px;font-weight:700;letter-spacing:2px;text-transform:uppercase}
+.nav-focus{font-size:11px;color:var(--accent);font-family:var(--mono);letter-spacing:1px;text-align:center;margin-bottom:16px}
+.day-row{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:20px}
+.day-box{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px 4px;text-align:center;cursor:pointer;transition:all .2s;user-select:none}
+.day-box:hover:not(.rest){border-color:var(--border2);background:var(--surface2)}
+.day-box.done{background:rgba(0,212,170,0.1);border-color:var(--accent2)}
+.day-box.rest{opacity:.35;cursor:default}
+.day-name{font-size:10px;letter-spacing:1px;color:var(--muted);font-family:var(--mono);margin-bottom:6px}
+.day-icon{font-size:18px;line-height:1}
+.day-label{font-size:9px;color:var(--muted);font-family:var(--mono);margin-top:4px;line-height:1.3}
+
+.note-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-family:var(--mono);margin-bottom:6px}
+textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:13px;padding:10px 12px;resize:none;min-height:72px;transition:border-color .2s}
+textarea:focus{outline:none;border-color:var(--accent)}
+
+.btn{background:transparent;border:1px solid var(--border2);color:var(--text);padding:8px 20px;font-family:var(--display);font-size:13px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;border-radius:6px;transition:all .2s}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{border-color:var(--accent);color:var(--accent)}
+.btn.primary:hover{background:rgba(0,212,170,0.1)}
+.saved{font-size:11px;color:var(--accent);font-family:var(--mono);opacity:0;transition:opacity .3s;margin-left:12px}
+
+/* metrics */
+.metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.m-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px}
+.m-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);font-family:var(--mono);margin-bottom:8px}
+.m-row{display:flex;align-items:center;gap:8px}
+.m-row input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:var(--mono);font-size:16px;font-weight:500;padding:6px 10px;min-width:0;transition:border-color .2s}
+.m-row input:focus{outline:none;border-color:var(--accent)}
+.m-unit{font-size:11px;color:var(--muted);font-family:var(--mono);white-space:nowrap}
+.m-target{font-size:10px;color:var(--muted);font-family:var(--mono);margin-top:4px}
+.m-bar{height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:8px}
+.m-fill{height:100%;border-radius:2px;transition:width .4s,background .4s}
+
+/* norms table */
+.norm-table{width:100%;border-collapse:collapse;font-size:13px}
+.norm-table th{text-align:left;padding:8px 12px;font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+.norm-table td{padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text);font-family:var(--mono);font-size:12px}
+.norm-table tr:last-child td{border-bottom:none}
+.norm-table tr:hover td{background:var(--surface2)}
+.badge{display:inline-block;padding:2px 10px;border-radius:4px;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;font-family:var(--mono)}
+.b-ok{background:rgba(0,212,170,0.15);color:var(--accent)}
+.b-warn{background:rgba(232,160,32,0.15);color:var(--amber)}
+.b-bad{background:rgba(226,75,75,0.15);color:var(--red)}
+
+/* export */
+.export-box{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;margin-top:16px}
+.export-box h3{font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.export-box p{font-size:12px;color:var(--muted);font-family:var(--mono);margin-bottom:14px;line-height:1.6}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap}
+
+@media(max-width:600px){
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .week-grid{grid-template-columns:repeat(2,1fr)}
+  .metrics-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+<div class="hdr">
+  <div class="hdr-left">
+    <h1>Трекер Kornev ЦСО 'A'</h1>
+    <p id="startDateLabel">Старт: 04.05.2026</p>
+  </div>
+  <div class="hdr-right">
+    <div class="overall" id="overallPct">0%</div>
+    <div class="overall-label">ЗАГАЛЬНИЙ ПРОГРЕС</div>
+    <div class="date" id="todayDate"></div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('overview')">Огляд</button>
+  <button class="tab" onclick="switchTab('week')">Тиждень</button>
+  <button class="tab" onclick="switchTab('metrics')">Показники</button>
+  <button class="tab" onclick="switchTab('norms')">Нормативи</button>
+  <button class="tab" onclick="switchTab('export')">Дані</button>
+</div>
+
+<!-- OVERVIEW -->
+<div id="overview" class="section active">
+  <div class="stats-row">
+    <div class="stat" id="stat-days">
+      <div class="stat-label">Днів виконано</div>
+      <div class="stat-val" id="sv-days">0</div>
+      <div class="stat-sub">з 48 тренувальних</div>
+    </div>
+    <div class="stat" id="stat-streak">
+      <div class="stat-label">Серія підряд</div>
+      <div class="stat-val" id="sv-streak">0</div>
+      <div class="stat-sub">тренувальних днів</div>
+    </div>
+    <div class="stat" id="stat-pullup">
+      <div class="stat-label">Підтягування</div>
+      <div class="stat-val" id="sv-pullup">—</div>
+      <div class="stat-sub">ціль: 18+ разів</div>
+    </div>
+    <div class="stat" id="stat-run">
+      <div class="stat-label">Біг 3 км</div>
+      <div class="stat-val" id="sv-run">—</div>
+      <div class="stat-sub">ціль: &lt;11:30</div>
+    </div>
+  </div>
+  <div class="day-section-title">8 тижнів підготовки</div>
+  <div class="week-grid" id="weekGrid"></div>
+</div>
+
+<!-- WEEK -->
+<div id="week" class="section">
+  <div class="week-nav">
+    <button class="nav-btn" onclick="prevW()">← Назад</button>
+    <div class="nav-title" id="navTitle">Тиждень 1</div>
+    <button class="nav-btn" onclick="nextW()">Вперед →</button>
+  </div>
+  <div class="nav-focus" id="navFocus"></div>
+  <div class="day-section-title">Відмічай виконані тренування</div>
+  <div class="day-row" id="dayRow"></div>
+  <div style="margin-bottom:8px">
+    <div class="note-label">Нотатки тижня</div>
+    <textarea id="weekNote" placeholder="Самопочуття, що давалось важко, що покращилось, що болить..."></textarea>
+  </div>
+  <div style="display:flex;align-items:center">
+    <button class="btn primary" onclick="saveWeek()">Зберегти</button>
+    <span class="saved" id="savedW">✓ ЗБЕРЕЖЕНО</span>
+  </div>
+</div>
+
+<!-- METRICS -->
+<div id="metrics" class="section">
+  <div class="day-section-title">Вводь результати раз на тиждень (в неділю)</div>
+  <div class="metrics-grid">
+    <div class="m-card">
+      <div class="m-label">Підтягування</div>
+      <div class="m-row"><input type="number" id="m-pullup" min="0" max="50" placeholder="0"><span class="m-unit">разів</span></div>
+      <div class="m-target">МІН: 12 / ЦІЛЬ: 18+</div>
+      <div class="m-bar"><div class="m-fill" id="mf-pullup" style="width:0%"></div></div>
+    </div>
+    <div class="m-card">
+      <div class="m-label">Біг 3 км (хвилини)</div>
+      <div class="m-row"><input type="number" id="m-run3" min="7" max="25" step="0.1" placeholder="15.0"><span class="m-unit">хв</span></div>
+      <div class="m-target">МІН: 13:00 / ЦІЛЬ: 11:30</div>
+      <div class="m-bar"><div class="m-fill" id="mf-run3" style="width:0%"></div></div>
+    </div>
+    <div class="m-card">
+      <div class="m-label">Віджимання (2 хв)</div>
+      <div class="m-row"><input type="number" id="m-pushup" min="0" max="120" placeholder="0"><span class="m-unit">разів</span></div>
+      <div class="m-target">МІН: 50 / ЦІЛЬ: 70+</div>
+      <div class="m-bar"><div class="m-fill" id="mf-pushup" style="width:0%"></div></div>
+    </div>
+    <div class="m-card">
+      <div class="m-label">Прес (2 хв)</div>
+      <div class="m-row"><input type="number" id="m-core" min="0" max="120" placeholder="0"><span class="m-unit">разів</span></div>
+      <div class="m-target">МІН: 50 / ЦІЛЬ: 70+</div>
+      <div class="m-bar"><div class="m-fill" id="mf-core" style="width:0%"></div></div>
+    </div>
+    <div class="m-card">
+      <div class="m-label">Присідання (2 хв)</div>
+      <div class="m-row"><input type="number" id="m-squat" min="0" max="120" placeholder="0"><span class="m-unit">разів</span></div>
+      <div class="m-target">МІН: 50 / ЦІЛЬ: 70+</div>
+      <div class="m-bar"><div class="m-fill" id="mf-squat" style="width:0%"></div></div>
+    </div>
+    <div class="m-card">
+      <div class="m-label">Вага тіла</div>
+      <div class="m-row"><input type="number" id="m-weight" min="50" max="150" step="0.5" placeholder="87"><span class="m-unit">кг</span></div>
+      <div class="m-target">СТАРТ: 87 КГ</div>
+      <div class="m-bar" style="background:transparent"></div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center">
+    <button class="btn primary" onclick="saveMetrics()">Зберегти показники</button>
+    <span class="saved" id="savedM">✓ ЗБЕРЕЖЕНО</span>
+  </div>
+</div>
+
+<!-- NORMS -->
+<div id="norms" class="section">
+  <div class="day-section-title" style="margin-bottom:16px">Нормативи ЦСО «А» — бойові посади</div>
+  <table class="norm-table">
+    <thead>
+      <tr><th>Вправа</th><th>Мінімум</th><th>Ціль</th><th>Твій старт</th><th>Статус</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Підтягування</td><td>12–15 разів</td><td>18+ разів</td><td>5–10 разів</td><td><span class="badge b-bad">Не досягнуто</span></td></tr>
+      <tr><td>Біг 3 км</td><td>13:00</td><td>11:30</td><td>13–16 хв</td><td><span class="badge b-bad">Не досягнуто</span></td></tr>
+      <tr><td>Віджимання 2 хв</td><td>50 разів</td><td>70+ разів</td><td>~35–40</td><td><span class="badge b-warn">Близько</span></td></tr>
+      <tr><td>Прес 2 хв</td><td>50 разів</td><td>70+ разів</td><td>~35–45</td><td><span class="badge b-warn">Близько</span></td></tr>
+      <tr><td>Присідання 2 хв</td><td>50 разів</td><td>70+ разів</td><td>перевір сам</td><td><span class="badge b-warn">Перевір</span></td></tr>
+      <tr><td>Спаринги</td><td>базовий рівень</td><td>впевнено</td><td>бокс + боротьба</td><td><span class="badge b-ok">Перевага</span></td></tr>
+      <tr><td>Плавання 500 м</td><td>без зупинок</td><td>будь-який стиль</td><td>невідомо</td><td><span class="badge b-warn">Перевір</span></td></tr>
+      <tr><td>Марш 11 км</td><td>рюкзак 14 кг, 1:15</td><td>без зупинок</td><td>не тестував</td><td><span class="badge b-warn">Перевір</span></td></tr>
+    </tbody>
+  </table>
+  <div style="margin-top:14px;font-size:11px;color:var(--muted);font-family:var(--mono);line-height:1.8">
+    * Нормативи на основі відкритих даних ССО ЗСУ та ЦСО «А» СБУ. Точні порогові значення «Альфи» не публікуються.<br>
+    * Спаринги — твоя стартова перевага. Бокс + боротьба = серйозний плюс на відборі.<br>
+    * Після 4-го тижня — контрольний тест. Після 8-го — фінальний.
+  </div>
+</div>
+
+<!-- EXPORT -->
+<div id="export" class="section">
+  <div class="day-section-title">Управління даними</div>
+  <div class="export-box">
+    <h3>Експорт даних</h3>
+    <p>Зберігає всі твої відмітки, показники та нотатки у JSON-файл.<br>Використовуй для резервної копії або переносу на інший пристрій.</p>
+    <div class="btn-row">
+      <button class="btn primary" onclick="exportData()">↓ Скачати резервну копію</button>
+    </div>
+  </div>
+  <div class="export-box" style="margin-top:12px">
+    <h3>Імпорт даних</h3>
+    <p>Завантаж раніше збережений JSON-файл щоб відновити прогрес.</p>
+    <div class="btn-row">
+      <label class="btn" style="cursor:pointer">↑ Завантажити файл <input type="file" accept=".json" style="display:none" onchange="importData(this)"></label>
+    </div>
+  </div>
+  <div class="export-box" style="margin-top:12px">
+    <h3>Скинути все</h3>
+    <p>Видаляє весь прогрес і починає трекер заново. Незворотня дія.</p>
+    <div class="btn-row">
+      <button class="btn" style="border-color:var(--red);color:var(--red)" onclick="resetAll()">✕ Скинути прогрес</button>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const DAYS = ['Пн','Вт','Ср','Чт','Пт','Сб','Нд'];
+const REST = [6];
+const DAY_LABELS = [
+  ['Підтяг+Верх+Прес','Ноги+Витрив.','Підтяг+Спина+Прес','Ноги+Функціонал','Підтяг+Верх+Прес','Біг 5км+Басейн','ВІДПОЧИНОК'],
+  ['Підтяг+Верх+Прес','Ноги+Витрив.','Підтяг+Спина+Прес','Ноги+Функціонал','Підтяг+Верх+Прес','Біг 5км+Басейн','ВІДПОЧИНОК'],
+  ['Підтяг+Верх+Прес','Ноги+Витрив.','Підтяг+Спина+Прес','Ноги+Функціонал','Підтяг+Верх+Прес','Біг 7км+Басейн','ВІДПОЧИНОК'],
+  ['Підтяг+Верх+Прес','ТЕСТ: підтяг','ТЕСТ: 3 км','Ноги+Функціонал','Підтяг+Верх+Прес','Біг 7км+Спаринг','ВІДПОЧИНОК'],
+  ['Підтяг+Верх+Прес','Ноги+Інтерв.','Підтяг+Спина+Прес','Ноги+Функціонал','Підтяг+Верх+Прес','Біг 8км+Басейн','ВІДПОЧИНОК'],
+  ['Підтяг+Верх+Прес','Ноги+Силов.','Підтяг+Спина+Прес','Ноги+Функціонал','Підтяг+Верх+Прес','Біг 8км+Спаринг','ВІДПОЧИНОК'],
+  ['Підтяг+Верх+Прес','Ноги+Інтерв.','Підтяг+Спина+Прес','Ноги+Функціонал','Підтяг+Верх+Прес','Біг 10км+Басейн','ВІДПОЧИНОК'],
+  ['Підтяг+Верх+Прес','ТЕСТ: всі','ТЕСТ: 3км+біг','Ноги+Функціонал','Підтяг+Верх+Прес','Біг 10км+Спаринг','ВІДПОЧИНОК'],
+];
+const WEEK_FOCUS = [
+  'Адаптація. Легкий старт.',
+  'Закріплення бази.',
+  'Ріст об\'єму. +1 підхід.',
+  'Тест: підтяг + 3 км.',
+  'Підвищення темпу бігу.',
+  'Силовий акцент.',
+  'Пікове навантаження.',
+  'Фінальний тест.'
+];
+
+let S = { days:{}, notes:{}, metrics:{}, startDate:null, currentWeek:0 };
+
+function loadState(){
+  try{ const d=localStorage.getItem('cso_alpha_v2'); if(d) S=JSON.parse(d); }catch(e){}
+  if(!S.days) S.days={};
+  if(!S.notes) S.notes={};
+  if(!S.metrics) S.metrics={};
+  if(!S.startDate){ S.startDate=new Date().toISOString().split('T')[0]; saveState(); }
+}
+
+function saveState(){
+  try{ localStorage.setItem('cso_alpha_v2',JSON.stringify(S)); }catch(e){}
+}
+
+function switchTab(t){
+  document.querySelectorAll('.tab').forEach((b,i)=>{
+    b.classList.toggle('active',['overview','week','metrics','norms','export'][i]===t);
+  });
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(t).classList.add('active');
+  if(t==='overview') renderOverview();
+  if(t==='week') renderWeek();
+  if(t==='metrics') loadMetrics();
+}
+
+function totalDone(){
+  let n=0;
+  for(let w=0;w<8;w++) for(let d=0;d<7;d++) if(!REST.includes(d)&&S.days[w+'-'+d]) n++;
+  return n;
+}
+
+function calcStreak(){
+  let streak=0;
+  const today=new Date();
+  for(let i=0;i<56;i++){
+    const dt=new Date(today); dt.setDate(dt.getDate()-i);
+    const dow=(dt.getDay()+6)%7;
+    if(REST.includes(dow)) continue;
+    const start=new Date(S.startDate);
+    const diff=Math.floor((dt-start)/(864e5));
+    const w=Math.floor(diff/7); const d=diff%7;
+    if(w<0||w>7||d<0) break;
+    if(S.days[w+'-'+d]) streak++; else break;
+  }
+  return streak;
+}
+
+function renderOverview(){
+  const done=totalDone();
+  const pct=Math.round(done/48*100);
+  document.getElementById('overallPct').textContent=pct+'%';
+  document.getElementById('sv-days').textContent=done;
+  document.getElementById('sv-streak').textContent=calcStreak();
+
+  const pu=S.metrics.pullup;
+  const run=S.metrics.run3;
+  document.getElementById('sv-pullup').textContent=pu?pu+' разів':'—';
+  document.getElementById('sv-run').textContent=run?run+' хв':'—';
+
+  const pus=document.getElementById('stat-pullup');
+  pus.className='stat '+(pu>=18?'ok':pu>=12?'warn':'danger');
+  const rs=document.getElementById('stat-run');
+  rs.className='stat '+(run&&run<=11.5?'ok':run&&run<=13?'warn':'danger');
+
+  document.getElementById('startDateLabel').textContent='Старт: '+S.startDate;
+  document.getElementById('todayDate').textContent=new Date().toLocaleDateString('uk-UA',{weekday:'short',day:'numeric',month:'short'}).toUpperCase();
+
+  const wg=document.getElementById('weekGrid');
+  wg.innerHTML='';
+  for(let w=0;w<8;w++){
+    let done=0;
+    for(let d=0;d<7;d++) if(!REST.includes(d)&&S.days[w+'-'+d]) done++;
+    const pct=Math.round(done/6*100);
+    const el=document.createElement('div');
+    el.className='week-card'+(w===S.currentWeek?' active-week':'')+(pct===100?' full':'');
+    el.innerHTML=`<div class="wk-num">ТИЖДЕНЬ ${w+1}</div><div class="wk-title">${WEEK_FOCUS[w]}</div><div class="wk-days">${done}/6 днів · ${pct}%</div><div class="wk-bar"><div class="wk-fill" style="width:${pct}%"></div></div>`;
+    el.onclick=()=>{ S.currentWeek=w; switchTab('week'); };
+    wg.appendChild(el);
+  }
+}
+
+function renderWeek(){
+  const w=S.currentWeek;
+  document.getElementById('navTitle').textContent='ТИЖДЕНЬ '+(w+1);
+  document.getElementById('navFocus').textContent=WEEK_FOCUS[w];
+  const row=document.getElementById('dayRow');
+  row.innerHTML='';
+  DAYS.forEach((dn,i)=>{
+    const isRest=REST.includes(i);
+    const key=w+'-'+i;
+    const done=S.days[key];
+    const el=document.createElement('div');
+    el.className='day-box'+(isRest?' rest':done?' done':'');
+    const lbl=DAY_LABELS[w][i];
+    el.innerHTML=`<div class="day-name">${dn}</div><div class="day-icon">${isRest?'◻':done?'✓':'○'}</div><div class="day-label">${lbl}</div>`;
+    if(!isRest) el.onclick=()=>{ S.days[key]=!S.days[key]; saveState(); renderWeek(); renderOverviewStats(); };
+    row.appendChild(el);
+  });
+  document.getElementById('weekNote').value=S.notes[w]||'';
+}
+
+function renderOverviewStats(){
+  if(document.getElementById('overview').classList.contains('active')) renderOverview();
+}
+
+function prevW(){ if(S.currentWeek>0){ S.currentWeek--; renderWeek(); } }
+function nextW(){ if(S.currentWeek<7){ S.currentWeek++; renderWeek(); } }
+
+function saveWeek(){
+  S.notes[S.currentWeek]=document.getElementById('weekNote').value;
+  saveState();
+  flash('savedW');
+}
+
+function loadMetrics(){
+  ['pullup','run3','pushup','core','squat','weight'].forEach(k=>{
+    const inp=document.getElementById('m-'+k);
+    if(inp&&S.metrics[k]!==undefined) inp.value=S.metrics[k];
+  });
+  updateBars();
+}
+
+function updateBars(){
+  function bar(id,val,min,target,inverse){
+    const el=document.getElementById('mf-'+id);
+    if(!el) return;
+    let pct,color;
+    if(inverse){
+      pct=Math.min(100,Math.max(0,Math.round((min-(val-target))/(min-target)*100)));
+      color=val<=target?'#00d4aa':val<=min?'#e8a020':'#e24b4b';
+    } else {
+      pct=Math.min(100,Math.round(val/target*100));
+      color=val>=target?'#00d4aa':val>=min?'#e8a020':'#e24b4b';
+    }
+    el.style.width=pct+'%'; el.style.background=color;
+  }
+  const pu=parseFloat(document.getElementById('m-pullup').value)||0;
+  const r3=parseFloat(document.getElementById('m-run3').value)||0;
+  const pp=parseFloat(document.getElementById('m-pushup').value)||0;
+  const co=parseFloat(document.getElementById('m-core').value)||0;
+  const sq=parseFloat(document.getElementById('m-squat').value)||0;
+  if(pu) bar('pullup',pu,12,18,false);
+  if(r3) bar('run3',r3,13,11.5,true);
+  if(pp) bar('pushup',pp,50,70,false);
+  if(co) bar('core',co,50,70,false);
+  if(sq) bar('squat',sq,50,70,false);
+}
+
+function saveMetrics(){
+  ['pullup','run3','pushup','core','squat','weight'].forEach(k=>{
+    const v=parseFloat(document.getElementById('m-'+k).value);
+    if(!isNaN(v)) S.metrics[k]=v;
+  });
+  saveState(); updateBars(); flash('savedM');
+}
+
+function flash(id){
+  const el=document.getElementById(id);
+  el.style.opacity='1';
+  setTimeout(()=>el.style.opacity='0',2000);
+}
+
+function exportData(){
+  const blob=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='alpha_tracker_backup_'+new Date().toISOString().split('T')[0]+'.json';
+  a.click();
+}
+
+function importData(input){
+  const file=input.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      S=JSON.parse(e.target.result);
+      saveState(); renderOverview();
+      alert('Дані успішно імпортовано!');
+    }catch(err){ alert('Помилка читання файлу.'); }
+  };
+  reader.readAsText(file);
+}
+
+function resetAll(){
+  if(confirm('Скинути весь прогрес? Це незворотньо.')){
+    S={days:{},notes:{},metrics:{},startDate:new Date().toISOString().split('T')[0],currentWeek:0};
+    saveState(); renderOverview();
+  }
+}
+
+document.querySelectorAll('#metrics input').forEach(inp=>{
+  inp.addEventListener('input',updateBars);
+});
+
+loadState();
+renderOverview();
+</script>
+</body>
+</html>
