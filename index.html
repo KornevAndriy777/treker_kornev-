@@ -139,8 +139,8 @@ textarea:focus{outline:none;border-color:var(--accent)}
 
 <div class="hdr">
   <div class="hdr-left">
-    <h1>Трекер Kornev ЦСО 'A'</h1>
-    <p id="startDateLabel">Старт: 04.05.2026</p>
+    <h1>ЦСО «А» Трекер</h1>
+    <p id="startDateLabel">Старт: —</p>
   </div>
   <div class="hdr-right">
     <div class="overall" id="overallPct">0%</div>
@@ -151,7 +151,7 @@ textarea:focus{outline:none;border-color:var(--accent)}
 
 <div class="tabs">
   <button class="tab active" onclick="switchTab('overview')">Огляд</button>
-  <button class="tab" onclick="switchTab('week')">Тиждень</button>
+  <button class="tab" onclick="switchTab('week')">Тижень</button>
   <button class="tab" onclick="switchTab('metrics')">Показники</button>
   <button class="tab" onclick="switchTab('norms')">Нормативи</button>
   <button class="tab" onclick="switchTab('export')">Дані</button>
@@ -254,26 +254,98 @@ textarea:focus{outline:none;border-color:var(--accent)}
 
 <!-- NORMS -->
 <div id="norms" class="section">
-  <div class="day-section-title" style="margin-bottom:16px">Нормативи ЦСО «А» — бойові посади</div>
-  <table class="norm-table">
+  <div class="day-section-title" style="margin-bottom:4px">Нормативи ЦСО «А» — офіційні дані рекрут центру</div>
+  <div style="font-size:11px;color:var(--amber);font-family:var(--mono);margin-bottom:20px;line-height:1.6">
+    Мінімум для заліку: <strong style="color:var(--accent)">450 балів із 500</strong> — сума всіх вправ КСВ. Стосується будь-якої посади, віку та вагової категорії.
+  </div>
+
+  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-family:var(--mono);margin-bottom:8px">── БІГ</div>
+  <table class="norm-table" style="margin-bottom:24px">
     <thead>
-      <tr><th>Вправа</th><th>Мінімум</th><th>Ціль</th><th>Твій старт</th><th>Статус</th></tr>
+      <tr><th>Дистанція</th><th>Норматив</th><th>Відпочинок після</th><th>Твій старт</th><th>Статус</th></tr>
     </thead>
     <tbody>
-      <tr><td>Підтягування</td><td>12–15 разів</td><td>18+ разів</td><td>5–10 разів</td><td><span class="badge b-bad">Не досягнуто</span></td></tr>
-      <tr><td>Біг 3 км</td><td>13:00</td><td>11:30</td><td>13–16 хв</td><td><span class="badge b-bad">Не досягнуто</span></td></tr>
-      <tr><td>Віджимання 2 хв</td><td>50 разів</td><td>70+ разів</td><td>~35–40</td><td><span class="badge b-warn">Близько</span></td></tr>
-      <tr><td>Прес 2 хв</td><td>50 разів</td><td>70+ разів</td><td>~35–45</td><td><span class="badge b-warn">Близько</span></td></tr>
-      <tr><td>Присідання 2 хв</td><td>50 разів</td><td>70+ разів</td><td>перевір сам</td><td><span class="badge b-warn">Перевір</span></td></tr>
-      <tr><td>Спаринги</td><td>базовий рівень</td><td>впевнено</td><td>бокс + боротьба</td><td><span class="badge b-ok">Перевага</span></td></tr>
-      <tr><td>Плавання 500 м</td><td>без зупинок</td><td>будь-який стиль</td><td>невідомо</td><td><span class="badge b-warn">Перевір</span></td></tr>
-      <tr><td>Марш 11 км</td><td>рюкзак 14 кг, 1:15</td><td>без зупинок</td><td>не тестував</td><td><span class="badge b-warn">Перевір</span></td></tr>
+      <tr><td>3000 м</td><td>11:45 хв</td><td>5 хв, потім 100 м</td><td>13–16 хв</td><td><span class="badge b-bad">Не досягнуто</span></td></tr>
+      <tr><td>100 м</td><td>13.4 сек</td><td>10 хв, потім КСВ</td><td>не тестував</td><td><span class="badge b-warn">Перевір</span></td></tr>
     </tbody>
   </table>
-  <div style="margin-top:14px;font-size:11px;color:var(--muted);font-family:var(--mono);line-height:1.8">
-    * Нормативи на основі відкритих даних ССО ЗСУ та ЦСО «А» СБУ. Точні порогові значення «Альфи» не публікуються.<br>
-    * Спаринги — твоя стартова перевага. Бокс + боротьба = серйозний плюс на відборі.<br>
-    * Після 4-го тижня — контрольний тест. Після 8-го — фінальний.
+
+  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-family:var(--mono);margin-bottom:4px">── КСВ БЛОК А</div>
+  <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-bottom:8px">Без ліміту часу. Вправи без відпочинку одна за одною. Макс відпочинок: 3 рази по 3 сек між вправами.</div>
+  <table class="norm-table" style="margin-bottom:24px">
+    <thead>
+      <tr><th>Вправа</th><th>Мін і бали</th><th>Макс — 100 балів</th><th>Твій старт</th><th>Статус</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Підтягування</td>
+        <td>7 разів — 55 балів</td>
+        <td>20 разів</td>
+        <td>23 рази</td>
+        <td><span class="badge b-ok">Закрито</span></td>
+      </tr>
+      <tr>
+        <td>Присідання «козачок»</td>
+        <td>53 рази — 51 бал</td>
+        <td>90 разів</td>
+        <td>не тестував</td>
+        <td><span class="badge b-warn">Перевір</span></td>
+      </tr>
+      <tr>
+        <td>Віджимання з відривом рук</td>
+        <td>28 разів — 51 бал</td>
+        <td>60 разів</td>
+        <td>~50 разів</td>
+        <td><span class="badge b-warn">Близько</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-family:var(--mono);margin-bottom:4px">── КСВ БЛОК Б</div>
+  <div style="font-size:10px;color:var(--muted);font-family:var(--mono);margin-bottom:8px">Після 5 хв відпочинку від блоку А. Загальний час виконання — 3 хвилини.</div>
+  <table class="norm-table" style="margin-bottom:24px">
+    <thead>
+      <tr><th>Вправа</th><th>Час</th><th>Мін і бали</th><th>Макс — 100 балів</th><th>Статус</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Підйом тулуба з бічним скручуванням (різнойменні коліна–лікті)</td>
+        <td>2 хв</td>
+        <td>48 разів — 51 бал</td>
+        <td>90 разів</td>
+        <td><span class="badge b-warn">Перевір</span></td>
+      </tr>
+      <tr>
+        <td>«Жаба» (упор присівши до упору лежачи)</td>
+        <td>1 хв</td>
+        <td>27 разів — 50 балів</td>
+        <td>40 разів</td>
+        <td><span class="badge b-warn">Перевір</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);font-family:var(--mono);margin-bottom:8px">── ЦІЛЬ: 470 БАЛІВ З 500 (залік із запасом)</div>
+  <table class="norm-table" style="margin-bottom:16px">
+    <thead>
+      <tr><th>Вправа</th><th>Ціль (балів)</th><th>Що потрібно виконати</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Підтягування</td><td>100</td><td>20+ разів</td></tr>
+      <tr><td>Козачок</td><td>90</td><td>~80 разів</td></tr>
+      <tr><td>Віджимання з відривом</td><td>100</td><td>60 разів</td></tr>
+      <tr><td>Скручування 2 хв</td><td>90</td><td>~80 разів</td></tr>
+      <tr><td>Жаба 1 хв</td><td>90</td><td>~37 разів</td></tr>
+      <tr><td><strong>РАЗОМ</strong></td><td><strong style="color:var(--accent)">470 / 500</strong></td><td style="color:var(--accent)">Залік з запасом</td></tr>
+    </tbody>
+  </table>
+
+  <div style="font-size:11px;color:var(--muted);font-family:var(--mono);line-height:1.9">
+    * Дані надані рекрут центром ЦСО «А» СБУ напряму.<br>
+    * Блок А виконується без зупинок — тренуй саме в такому форматі.<br>
+    * Козачок і жаба — специфічні вправи, потребують окремого відпрацювання техніки.<br>
+    * Біг 3 км — головний дефіцит. Норматив 11:45, твій старт 13–16 хв.<br>
+    * Підтягування закрито на старті (23 рази). Фокус: біг, козачок, жаба, скручування.
   </div>
 </div>
 
@@ -336,7 +408,7 @@ function loadState(){
   if(!S.days) S.days={};
   if(!S.notes) S.notes={};
   if(!S.metrics) S.metrics={};
-  if(!S.startDate){ S.startDate=new Date().toISOString().split('T')[0]; saveState(); }
+  if(!S.startDate){ S.startDate='2026-05-04'; saveState(); }
 }
 
 function saveState(){
